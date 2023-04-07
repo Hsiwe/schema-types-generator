@@ -6,5 +6,3 @@ import { unitsToSchema } from "./simple-schema/schema-to-reflection";
 (async () => {
   fs.writeFile("./output/result.ts", printSchema(unitsToSchema(simpleSchema)));
 })();
-
-// TODO: refactor
