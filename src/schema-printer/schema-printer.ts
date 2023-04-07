@@ -1,10 +1,8 @@
-import * as t from "io-ts";
 import type {
   UnitReflectionReturnValue,
   UnitReflectionT,
 } from "../schema-transformer/schema-transformer";
 import ts from "typescript";
-import { isString } from "fp-ts/lib/string";
 
 const transform = (schema: UnitReflectionT[]): ts.InterfaceDeclaration => {
   return ts.factory.createInterfaceDeclaration(
