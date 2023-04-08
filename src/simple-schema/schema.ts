@@ -54,15 +54,15 @@ class SimpleContainerUnit implements ContainerUnit {
 
 export const simpleSchema = [
   new SimpleContainerUnit(true, "root", [
-    new SimpleContainerUnit(true, "container_first", [
-      new SimpleTextUnit(true, "third", "thirdvalue"),
-      new SimpleTextUnit(false, "third2", "thirdvalue3"),
+    new SimpleContainerUnit(true, "first_containter", [
+      new SimpleTextUnit(true, "text_unit_1", "text_unit_1_value"),
+      new SimpleTextUnit(false, "text_unit_2", "text_unit_2_value"),
     ]),
-    new SimpleTextUnit(false, "first", "value1"),
-    new SimpleTextUnit(true, "second", "value2"),
-    new SimpleNumberUnit(true, "number1", 6),
-    new SimpleBooleanUnit(true, "boolean1", false),
+    new SimpleTextUnit(false, "text_unit_3", "text_unit_3_value"),
+    new SimpleTextUnit(true, "text_unit_4", "text_unit_4_value"),
+    new SimpleNumberUnit(true, "number_unit_1", 1),
+    new SimpleBooleanUnit(true, "boolean_unit_1", false),
   ]),
-  new SimpleNumberUnit(true, "number3", 7),
-  new SimpleDateUnit(true, "date1", new Date()),
+  new SimpleNumberUnit(true, "number_unit_2", 2),
+  new SimpleDateUnit(true, "date_unit_1", new Date()),
 ];
