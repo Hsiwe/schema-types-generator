@@ -1,13 +1,16 @@
 import type {
   UnitReflectionReturnValue,
   UnitReflectionT,
-} from "../schema-transformer/schema-transformer";
+} from "./schema-types";
 import ts from "typescript";
 
-const transform = (schema: UnitReflectionT[]): ts.InterfaceDeclaration => {
+const transform = (
+  schema: UnitReflectionT[],
+  treeName: string
+): ts.InterfaceDeclaration => {
   return ts.factory.createInterfaceDeclaration(
-    undefined,
-    "UnitTree",
+    ts.factory.createModifiersFromModifierFlags(ts.ModifierFlags.Export),
+    treeName,
     undefined,
     undefined,
     schema.flatMap(transformHelper)
@@ -49,8 +52,11 @@ export type SchemaTypeTree = string & {
   readonly SchemaTypeTree: unique symbol;
 };
 
-export function generateTypeTree(schema: UnitReflectionT[]): SchemaTypeTree {
-  const transformedSchema = transform(schema);
+export function generateTypeTree(
+  schema: UnitReflectionT[],
+  treeName: string
+): SchemaTypeTree {
+  const transformedSchema = transform(schema, treeName);
 
   const printer = ts.createPrinter({ newLine: ts.NewLineKind.LineFeed });
 

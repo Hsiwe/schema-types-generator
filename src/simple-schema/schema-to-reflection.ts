@@ -2,7 +2,7 @@ import { isBoolean } from "fp-ts/lib/boolean";
 import type {
   UnitReflectionReturnValue,
   UnitReflectionT,
-} from "../schema-transformer/schema-transformer";
+} from "../schema-printer/schema-types";
 import type { Unit } from "./schema";
 import { isString } from "fp-ts/lib/string";
 import { isDate } from "util/types";
