@@ -17,6 +17,21 @@ const transform = (
   );
 };
 
+const selectNode = ts.factory.createTypeLiteralNode([
+  ts.factory.createPropertySignature(
+    undefined,
+    "key",
+    undefined,
+    ts.factory.createTypeReferenceNode("string")
+  ),
+  ts.factory.createPropertySignature(
+    undefined,
+    "value",
+    undefined,
+    ts.factory.createTypeReferenceNode("string")
+  ),
+]);
+
 const transformHelper = (xs: UnitReflectionT): ts.PropertySignature => {
   const typeMap: Record<
     Exclude<UnitReflectionReturnValue, "recursive">,
@@ -27,20 +42,7 @@ const transformHelper = (xs: UnitReflectionT): ts.PropertySignature => {
     number: ts.factory.createTypeReferenceNode("number"),
     date: ts.factory.createTypeReferenceNode("Date"),
     unknown: ts.factory.createTypeReferenceNode("unknown"),
-    select: ts.factory.createTypeLiteralNode([
-      ts.factory.createPropertySignature(
-        undefined,
-        "key",
-        undefined,
-        ts.factory.createTypeReferenceNode("string")
-      ),
-      ts.factory.createPropertySignature(
-        undefined,
-        "value",
-        undefined,
-        ts.factory.createTypeReferenceNode("string")
-      ),
-    ]),
+    select: selectNode,
   };
 
   const questionToken = !xs.required
