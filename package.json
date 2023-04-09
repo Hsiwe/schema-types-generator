@@ -1,16 +1,18 @@
 {
-  "name": "schema-types-generator",
+  "name": "@hsiwe/schema-types-generator",
   "version": "1.0.0",
-  "description": "",
+  "description": "Generates types based on an abstract unit tree",
   "main": "./src/index.ts",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "rimraf ./dist && tsc",
     "start": "npm run build && node dist/index.js",
     "start:dev": "npx nodemon",
-    "generate-sample": "ts-node ./src/simple-schema/generate-sample.ts"
+    "generate-sample": "ts-node ./src/simple-schema/generate-sample.ts",
+    "prepare" : "npm run build"
   },
-  "author": "",
+  "author": "hsiwe",
+  "files": ["dist/**/*"],
   "license": "ISC",
   "devDependencies": {
     "@tsconfig/node-lts-strictest": "^18.12.1",

@@ -12,6 +12,8 @@ const UnitReflection: t.Type<UnitReflectionT> = t.recursion(
           t.literal("number"),
           t.literal("boolean"),
           t.literal("date"),
+          t.literal("select"),
+          t.literal("unknown"),
         ]),
       }),
       t.type({
@@ -28,7 +30,9 @@ export type UnitReflectionReturnValue =
   | "number"
   | "boolean"
   | "date"
-  | "recursive";
+  | "recursive"
+  | "select"
+  | "unknown";
 
 export type UnitReflectionT =
   | {

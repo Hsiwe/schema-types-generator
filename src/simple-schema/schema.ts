@@ -1,6 +1,13 @@
-export type Unit = ValueUnit<string | number | boolean | Date> | ContainerUnit;
+type UnitValue =
+  | string
+  | number
+  | boolean
+  | Date
+  | { key: string; value: string };
 
-interface ValueUnit<T extends string | number | boolean | Date> {
+export type Unit = ValueUnit<UnitValue> | ContainerUnit;
+
+interface ValueUnit<T extends UnitValue> {
   readonly required: boolean;
   readonly key: string;
   readonly value: T;
@@ -43,6 +50,13 @@ class SimpleBooleanUnit implements ValueUnit<boolean> {
     readonly value: boolean
   ) {}
 }
+class SimpleSelectUnit implements ValueUnit<{ value: string; key: string }> {
+  constructor(
+    readonly required: boolean,
+    readonly key: string,
+    readonly value: { value: string; key: string }
+  ) {}
+}
 
 class SimpleContainerUnit implements ContainerUnit {
   constructor(
@@ -62,6 +76,7 @@ export const simpleSchema = [
     new SimpleTextUnit(true, "text_unit_4", "text_unit_4_value"),
     new SimpleNumberUnit(true, "number_unit_1", 1),
     new SimpleBooleanUnit(true, "boolean_unit_1", false),
+    new SimpleSelectUnit(true, "select_unit_1", { key: "key", value: "value" }),
   ]),
   new SimpleNumberUnit(true, "number_unit_2", 2),
   new SimpleDateUnit(true, "date_unit_1", new Date()),

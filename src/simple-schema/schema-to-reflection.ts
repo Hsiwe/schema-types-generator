@@ -14,6 +14,7 @@ const unitToType = (unit: Unit): UnitReflectionReturnValue => {
     if (isString(unit.value)) return "string";
     if (isDate(unit.value)) return "date";
     if (isNumber(unit.value)) return "number";
+    if ("key" in unit.value) return "select";
   }
   return "recursive";
 };

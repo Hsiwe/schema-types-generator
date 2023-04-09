@@ -20,12 +20,27 @@ const transform = (
 const transformHelper = (xs: UnitReflectionT): ts.PropertySignature => {
   const typeMap: Record<
     Exclude<UnitReflectionReturnValue, "recursive">,
-    ts.TypeReferenceNode
+    ts.TypeNode
   > = {
     boolean: ts.factory.createTypeReferenceNode("boolean"),
     string: ts.factory.createTypeReferenceNode("string"),
     number: ts.factory.createTypeReferenceNode("number"),
     date: ts.factory.createTypeReferenceNode("Date"),
+    unknown: ts.factory.createTypeReferenceNode("unknown"),
+    select: ts.factory.createTypeLiteralNode([
+      ts.factory.createPropertySignature(
+        undefined,
+        "key",
+        undefined,
+        ts.factory.createTypeReferenceNode("string")
+      ),
+      ts.factory.createPropertySignature(
+        undefined,
+        "value",
+        undefined,
+        ts.factory.createTypeReferenceNode("string")
+      ),
+    ]),
   };
 
   const questionToken = !xs.required
