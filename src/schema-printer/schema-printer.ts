@@ -32,7 +32,7 @@ const selectNode = ts.factory.createTypeLiteralNode([
   ),
 ]);
 
-const transformHelper = (xs: UnitReflectionT): ts.PropertySignature => {
+const transformHelper = (unit: UnitReflectionT): ts.PropertySignature => {
   const typeMap: Record<
     Exclude<UnitReflectionReturnValue, "recursive">,
     ts.TypeNode
@@ -45,23 +45,23 @@ const transformHelper = (xs: UnitReflectionT): ts.PropertySignature => {
     select: selectNode,
   };
 
-  const questionToken = !xs.required
+  const questionToken = !unit.required
     ? ts.factory.createToken(ts.SyntaxKind.QuestionToken)
     : undefined;
 
-  if (xs.returnValue !== "recursive") {
+  if (unit.returnValue !== "recursive") {
     return ts.factory.createPropertySignature(
       undefined,
-      xs.key,
+      unit.key,
       questionToken,
-      typeMap[xs.returnValue]
+      typeMap[unit.returnValue]
     );
   }
   return ts.factory.createPropertySignature(
     undefined,
-    xs.key,
+    unit.key,
     questionToken,
-    ts.factory.createTypeLiteralNode(xs.values.map(transformHelper))
+    ts.factory.createTypeLiteralNode(unit.values.map(transformHelper))
   );
 };
 
