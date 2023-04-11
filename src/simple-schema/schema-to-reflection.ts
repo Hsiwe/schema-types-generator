@@ -5,14 +5,13 @@ import type {
 } from "../schema-printer/schema-types";
 import type { Unit } from "./schema";
 import { isString } from "fp-ts/lib/string";
-import { isDate } from "util/types";
 import { isNumber } from "fp-ts/lib/number";
 
 const unitToType = (unit: Unit): UnitReflectionReturnValue => {
   if ("value" in unit) {
     if (isBoolean(unit.value)) return "boolean";
     if (isString(unit.value)) return "string";
-    if (isDate(unit.value)) return "date";
+    if (unit.value instanceof Date) return "date";
     if (isNumber(unit.value)) return "number";
     if ("key" in unit.value) return "select";
   }
