@@ -5,7 +5,7 @@ type UnitValue =
   | Date
   | { key: string; value: string };
 
-export type Unit = ValueUnit<UnitValue> | ContainerUnit;
+export type Unit = ValueUnit<UnitValue> | ContainerUnit | CustomTypeUnit;
 
 interface ValueUnit<T extends UnitValue> {
   readonly required: boolean;
@@ -19,6 +19,14 @@ interface ContainerUnit {
   readonly values: Unit[];
 }
 
+class CustomTypeUnit implements ValueUnit<string> {
+  constructor(
+    readonly required: boolean,
+    readonly key: string,
+    readonly value: string,
+    readonly customField: 'custom' = 'custom',
+  ) {}
+}
 class SimpleTextUnit implements ValueUnit<string> {
   constructor(
     readonly required: boolean,
@@ -80,4 +88,5 @@ export const simpleSchema = [
   ]),
   new SimpleNumberUnit(true, 'number_unit_2', 2),
   new SimpleDateUnit(true, 'date_unit_1', new Date()),
+  new CustomTypeUnit(true, 'custom_type_unit_1', '')
 ];

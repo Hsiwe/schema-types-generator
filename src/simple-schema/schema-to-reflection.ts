@@ -6,8 +6,9 @@ import type {
 import type { Unit } from './schema';
 import { isString } from 'fp-ts/lib/string';
 import { isNumber } from 'fp-ts/lib/number';
+import ts from 'typescript';
 
-const unitToType = (unit: Unit): UnitReflectionReturnValue => {
+const unitToType = (unit: Unit): Exclude<UnitReflectionReturnValue, 'custom'> => {
   if ('value' in unit) {
     if (isBoolean(unit.value)) return 'boolean';
     if (isString(unit.value)) return 'string';
@@ -28,6 +29,15 @@ const singleUnitToSchema = (unit: Unit): UnitReflectionT => {
       returnValue,
       values: unit.values.map(singleUnitToSchema),
     } satisfies UnitReflectionT;
+
+  if('customField' in unit) {
+    return {
+      key: unit.key,
+      required: unit.required,
+      returnValue: 'custom',
+      type: ts.factory.createLiteralTypeNode(ts.factory.createStringLiteral('custom')),
+    };
+  }
 
   if (returnValue !== 'recursive')
     return {
