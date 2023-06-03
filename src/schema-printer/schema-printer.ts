@@ -1,8 +1,8 @@
 import type {
   UnitReflectionReturnValue,
   UnitReflectionT,
-} from "./schema-types";
-import ts from "typescript";
+} from './schema-types';
+import ts from 'typescript';
 
 const transform = (
   schema: UnitReflectionT[],
@@ -20,28 +20,28 @@ const transform = (
 const selectNode = ts.factory.createTypeLiteralNode([
   ts.factory.createPropertySignature(
     undefined,
-    "key",
+    'key',
     undefined,
-    ts.factory.createTypeReferenceNode("string")
+    ts.factory.createTypeReferenceNode('string')
   ),
   ts.factory.createPropertySignature(
     undefined,
-    "value",
+    'value',
     undefined,
-    ts.factory.createTypeReferenceNode("string")
+    ts.factory.createTypeReferenceNode('string')
   ),
 ]);
 
 const transformHelper = (unit: UnitReflectionT): ts.PropertySignature => {
   const typeMap: Record<
-    Exclude<UnitReflectionReturnValue, "recursive">,
+    Exclude<UnitReflectionReturnValue, 'recursive'>,
     ts.TypeNode
   > = {
-    boolean: ts.factory.createTypeReferenceNode("boolean"),
-    string: ts.factory.createTypeReferenceNode("string"),
-    number: ts.factory.createTypeReferenceNode("number"),
-    date: ts.factory.createTypeReferenceNode("Date"),
-    unknown: ts.factory.createTypeReferenceNode("unknown"),
+    boolean: ts.factory.createTypeReferenceNode('boolean'),
+    string: ts.factory.createTypeReferenceNode('string'),
+    number: ts.factory.createTypeReferenceNode('number'),
+    date: ts.factory.createTypeReferenceNode('Date'),
+    unknown: ts.factory.createTypeReferenceNode('unknown'),
     select: selectNode,
   };
 
@@ -49,7 +49,7 @@ const transformHelper = (unit: UnitReflectionT): ts.PropertySignature => {
     ? ts.factory.createToken(ts.SyntaxKind.QuestionToken)
     : undefined;
 
-  if (unit.returnValue !== "recursive") {
+  if (unit.returnValue !== 'recursive') {
     return ts.factory.createPropertySignature(
       undefined,
       unit.key,
@@ -81,8 +81,8 @@ export function generateTypeTree(
     ts.EmitHint.Unspecified,
     transformedSchema,
     ts.createSourceFile(
-      "sourceFile.ts",
-      "",
+      'sourceFile.ts',
+      '',
       ts.ScriptTarget.Latest,
       false,
       ts.ScriptKind.TS

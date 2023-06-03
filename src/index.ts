@@ -1,8 +1,8 @@
-import path from "path";
+import path from 'path';
 
-import { generateTypeTree } from "./schema-printer/schema-printer";
-import type { UnitReflectionT } from "./schema-printer/schema-types";
-import { writeFileSync } from "fs";
+import { generateTypeTree } from './schema-printer/schema-printer';
+import type { UnitReflectionT } from './schema-printer/schema-types';
+import { writeFileSync } from 'fs';
 
 export async function printTree<T>(
   transformF: (units: T[]) => UnitReflectionT[],
@@ -11,7 +11,7 @@ export async function printTree<T>(
 ): Promise<void> {
   const splitted = __dirname.split(path.sep);
   splitted.pop();
-  splitted.push("generated");
+  splitted.push('generated');
   const newPath = splitted.join(path.sep);
 
   writeFileSync(

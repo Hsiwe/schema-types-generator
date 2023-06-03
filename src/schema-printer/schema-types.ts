@@ -1,48 +1,48 @@
-import * as t from "io-ts";
+import * as t from 'io-ts';
 
 const UnitReflection: t.Type<UnitReflectionT> = t.recursion(
-  "UnitReflection",
+  'UnitReflection',
   () =>
     t.union([
       t.type({
         required: t.boolean,
         key: t.string,
         returnValue: t.union([
-          t.literal("string"),
-          t.literal("number"),
-          t.literal("boolean"),
-          t.literal("date"),
-          t.literal("select"),
-          t.literal("unknown"),
+          t.literal('string'),
+          t.literal('number'),
+          t.literal('boolean'),
+          t.literal('date'),
+          t.literal('select'),
+          t.literal('unknown'),
         ]),
       }),
       t.type({
         required: t.boolean,
         key: t.string,
-        returnValue: t.literal("recursive"),
+        returnValue: t.literal('recursive'),
         values: t.array(UnitReflection),
       }),
     ])
 );
 
 export type UnitReflectionReturnValue =
-  | "string"
-  | "number"
-  | "boolean"
-  | "date"
-  | "recursive"
-  | "select"
-  | "unknown";
+  | 'string'
+  | 'number'
+  | 'boolean'
+  | 'date'
+  | 'recursive'
+  | 'select'
+  | 'unknown';
 
 export type UnitReflectionT =
   | {
       required: boolean;
       key: string;
-      returnValue: Exclude<UnitReflectionReturnValue, "recursive">;
+      returnValue: Exclude<UnitReflectionReturnValue, 'recursive'>;
     }
   | {
       required: boolean;
       key: string;
-      returnValue: Extract<"recursive", UnitReflectionReturnValue>;
+      returnValue: Extract<'recursive', UnitReflectionReturnValue>;
       values: UnitReflectionT[];
     };

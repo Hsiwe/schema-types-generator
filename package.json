@@ -9,10 +9,12 @@
     "start": "npm run build && node dist/index.js",
     "start:dev": "npx nodemon",
     "generate-sample": "ts-node ./src/simple-schema/generate-sample.ts",
-    "prepare" : "npm run build"
+    "prepare": "npm run build"
   },
   "author": "hsiwe",
-  "files": ["dist/**/*"],
+  "files": [
+    "dist/**/*"
+  ],
   "license": "ISC",
   "devDependencies": {
     "@tsconfig/node-lts-strictest": "^18.12.1",
@@ -28,6 +30,7 @@
     "typescript": "^5.0.3"
   },
   "dependencies": {
+    "eslint-plugin-prettier": "^4.2.1",
     "fp-ts": "^2.13.1",
     "io-ts": "^2.2.20",
     "io-ts-types": "^0.5.19",

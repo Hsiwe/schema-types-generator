@@ -17,13 +17,6 @@
         "@typescript-eslint"
     ],
     "rules": {
-        "prettier/prettier": [
-            "error",
-            {
-                "endOfLine": "auto",
-                "printWidth": 120
-            },
-        ],
         "linebreak-style": [
             "error",
             "windows"
