@@ -1,8 +1,5 @@
 import { isBoolean } from 'fp-ts/lib/boolean';
-import type {
-  UnitReflectionReturnValue,
-  UnitReflectionT,
-} from '../schema-printer/schema-types';
+import type { UnitReflectionReturnValue, UnitReflectionT } from '../schema-printer/schema-types';
 import type { Unit } from './schema';
 import { isString } from 'fp-ts/lib/string';
 import { isNumber } from 'fp-ts/lib/number';
@@ -30,7 +27,7 @@ const singleUnitToSchema = (unit: Unit): UnitReflectionT => {
       values: unit.values.map(singleUnitToSchema),
     } satisfies UnitReflectionT;
 
-  if('customField' in unit) {
+  if ('customField' in unit) {
     return {
       key: unit.key,
       required: unit.required,
@@ -49,5 +46,4 @@ const singleUnitToSchema = (unit: Unit): UnitReflectionT => {
   throw new Error('Was not able to parse unit');
 };
 
-export const unitsToSchema: (xs: Unit[]) => UnitReflectionT[] = (xs) =>
-  xs.map(singleUnitToSchema);
+export const unitsToSchema: (xs: Unit[]) => UnitReflectionT[] = (xs) => xs.map(singleUnitToSchema);

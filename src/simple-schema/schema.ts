@@ -1,9 +1,4 @@
-type UnitValue =
-  | string
-  | number
-  | boolean
-  | Date
-  | { key: string; value: string };
+type UnitValue = string | number | boolean | Date | { key: string; value: string };
 
 export type Unit = ValueUnit<UnitValue> | ContainerUnit | CustomTypeUnit;
 
@@ -24,39 +19,23 @@ class CustomTypeUnit implements ValueUnit<string> {
     readonly required: boolean,
     readonly key: string,
     readonly value: string,
-    readonly customField: 'custom' = 'custom',
+    readonly customField: 'custom' = 'custom'
   ) {}
 }
 class SimpleTextUnit implements ValueUnit<string> {
-  constructor(
-    readonly required: boolean,
-    readonly key: string,
-    readonly value: string
-  ) {}
+  constructor(readonly required: boolean, readonly key: string, readonly value: string) {}
 }
 
 class SimpleDateUnit implements ValueUnit<Date> {
-  constructor(
-    readonly required: boolean,
-    readonly key: string,
-    readonly value: Date
-  ) {}
+  constructor(readonly required: boolean, readonly key: string, readonly value: Date) {}
 }
 
 class SimpleNumberUnit implements ValueUnit<number> {
-  constructor(
-    readonly required: boolean,
-    readonly key: string,
-    readonly value: number
-  ) {}
+  constructor(readonly required: boolean, readonly key: string, readonly value: number) {}
 }
 
 class SimpleBooleanUnit implements ValueUnit<boolean> {
-  constructor(
-    readonly required: boolean,
-    readonly key: string,
-    readonly value: boolean
-  ) {}
+  constructor(readonly required: boolean, readonly key: string, readonly value: boolean) {}
 }
 class SimpleSelectUnit implements ValueUnit<{ value: string; key: string }> {
   constructor(
@@ -67,11 +46,7 @@ class SimpleSelectUnit implements ValueUnit<{ value: string; key: string }> {
 }
 
 class SimpleContainerUnit implements ContainerUnit {
-  constructor(
-    readonly required: boolean,
-    readonly key: string,
-    readonly values: Unit[]
-  ) {}
+  constructor(readonly required: boolean, readonly key: string, readonly values: Unit[]) {}
 }
 
 export const simpleSchema = [
@@ -88,5 +63,5 @@ export const simpleSchema = [
   ]),
   new SimpleNumberUnit(true, 'number_unit_2', 2),
   new SimpleDateUnit(true, 'date_unit_1', new Date()),
-  new CustomTypeUnit(true, 'custom_type_unit_1', '')
+  new CustomTypeUnit(true, 'custom_type_unit_1', ''),
 ];

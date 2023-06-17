@@ -10,8 +10,5 @@ export async function printTree<T>(
 ): Promise<void> {
   await mkdir(dirPath);
 
-  await writeFile(
-    `${dirPath}/${treeName}.ts`,
-    generateTypeTree(transformF(units), treeName)
-  );
+  await writeFile(`${dirPath}/${treeName}.ts`, generateTypeTree(transformF(units), treeName));
 }
