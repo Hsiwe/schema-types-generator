@@ -1,5 +1,5 @@
 import ts from 'typescript';
-import { hasher } from 'node-object-hash';
+import hasher from 'node-object-hash';
 import { instanceToPlain } from 'class-transformer';
 
 export interface Snapshot {
