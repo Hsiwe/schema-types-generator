@@ -7,7 +7,7 @@ const transform = (schema: UnitReflectionT[], treeName: string): ts.InterfaceDec
     treeName,
     undefined,
     undefined,
-    schema.flatMap(transformHelper)
+    schema.map(transformHelper)
   );
 };
 
@@ -63,7 +63,7 @@ export type SchemaTypeTree = string & {
   readonly SchemaTypeTree: unique symbol;
 };
 
-export function generateTypeTree(schema: UnitReflectionT[], treeName: string): SchemaTypeTree {
+export function createTypeTree(schema: UnitReflectionT[], treeName: string): SchemaTypeTree {
   const transformedSchema = transform(schema, treeName);
 
   const printer = ts.createPrinter({ newLine: ts.NewLineKind.LineFeed });
@@ -73,4 +73,8 @@ export function generateTypeTree(schema: UnitReflectionT[], treeName: string): S
     transformedSchema,
     ts.createSourceFile('sourceFile.ts', '', ts.ScriptTarget.Latest, false, ts.ScriptKind.TS)
   ) as SchemaTypeTree;
+}
+
+export function createTypeLiteralNode(schema: UnitReflectionT[]): ts.TypeLiteralNode {
+  return ts.factory.createTypeLiteralNode(schema.map(transformHelper));
 }
