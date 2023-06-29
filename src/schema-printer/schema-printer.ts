@@ -1,3 +1,4 @@
+import { printType } from '../lib/ts-helpers';
 import type { UnitReflectionReturnValue, UnitReflectionT } from './schema-types';
 import ts from 'typescript';
 
@@ -66,13 +67,7 @@ export type SchemaTypeTree = string & {
 export function createTypeTree(schema: UnitReflectionT[], treeName: string): SchemaTypeTree {
   const transformedSchema = transform(schema, treeName);
 
-  const printer = ts.createPrinter({ newLine: ts.NewLineKind.LineFeed });
-
-  return printer.printNode(
-    ts.EmitHint.Unspecified,
-    transformedSchema,
-    ts.createSourceFile('sourceFile.ts', '', ts.ScriptTarget.Latest, false, ts.ScriptKind.TS)
-  ) as SchemaTypeTree;
+  return printType(transformedSchema) as SchemaTypeTree;
 }
 
 export function createTypeLiteralNode(schema: UnitReflectionT[]): ts.TypeLiteralNode {
