@@ -2,6 +2,7 @@ import ts from 'typescript';
 import hasher from 'node-object-hash';
 import { instanceToPlain } from 'class-transformer';
 import * as O from 'fp-ts/Option';
+import * as E from 'fp-ts/Either';
 import { arrayToUnionType } from '../lib/ts-helpers';
 import { pipe } from 'fp-ts/lib/function';
 
@@ -126,6 +127,16 @@ export function parseSourceFileToSnapshots(source: string): O.Option<Snapshot[]>
 export function insertSnapshot(snapshots: readonly Snapshot[], snapshot: Snapshot): Snapshot[] {
   if (!snapshots.find((x) => x.hash === snapshot.hash)) return [...snapshots, snapshot];
   return [...snapshots];
+}
+
+export function deleteSnapshotByHash(
+  snapshots: readonly Snapshot[],
+  hash: string
+): E.Either<string, Snapshot[]> {
+  const index = snapshots.findIndex((x) => x.hash === hash);
+  if (index === -1) return E.left(`Snapshot with hash ${hash} was not found`);
+
+  return E.right(snapshots.slice(0, index).concat(snapshots.slice(index + 1)));
 }
 
 export function snapshotsToUnionType(

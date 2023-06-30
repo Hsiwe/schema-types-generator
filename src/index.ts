@@ -4,6 +4,7 @@ import {
   Snapshot,
   SnapshotPrinted,
   createSnapshot,
+  deleteSnapshotByHash,
   insertSnapshot,
   parseSourceFileToSnapshots,
   snapshotsToUnionType,
@@ -15,6 +16,7 @@ import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'fs';
 import { printType } from './lib/ts-helpers';
 import * as TE from 'fp-ts/lib/TaskEither';
 import * as O from 'fp-ts/lib/Option';
+import * as E from 'fp-ts/lib/Either';
 
 const printTreeProgram = <T>(
   transformF: (units: T[]) => UnitReflectionT[],
@@ -89,6 +91,44 @@ const printSnapshotProgram = <T>(
     T.flatMap(() => T.of(undefined))
   );
 
+const deleteSnapshotProgram = (schemaName: string, dirPath: string): T.Task<void> =>
+  pipe(
+    T.Do,
+    T.apS('hash', ask('Insert the hash of a snapshot: ')),
+    T.bind('pathToFile', () => T.of(`${dirPath}/${schemaName}_snapshot.ts`)),
+    T.apS(
+      'source',
+      pipe(
+        TE.tryCatch(
+          async () => readFileSync(`${dirPath}/${schemaName}_snapshot.ts`, 'utf-8'),
+          (reason) => new Error(`${reason}`)
+        ),
+        TE.fold(() => T.of(undefined), T.of)
+      )
+    ),
+    T.bind('snapshots', ({ source }) =>
+      T.of(
+        pipe(
+          parseSourceFileToSnapshots(source || ''),
+          O.fold(
+            () => [],
+            (snapshots) => snapshots
+          )
+        )
+      )
+    ),
+    T.bind('newSnapshots', ({ snapshots, hash }) => T.of(deleteSnapshotByHash(snapshots, hash))),
+    T.tap(({ newSnapshots, pathToFile }) =>
+      E.fold<string, Snapshot[], T.Task<void>>(
+        (left) => putStrLn(`Was not able to delete a snapshot. Error: ${left}`),
+        (right) =>
+          right.length === 0
+            ? T.of(writeFileSync(pathToFile, ''))
+            : T.of(writeFileSync(pathToFile, printType(snapshotsToUnionType(schemaName, right))))
+      )(newSnapshots)
+    ),
+    T.flatMap(() => T.of(undefined))
+  );
 export async function printSnapshot<T>(
   transformF: (units: T[]) => UnitReflectionT[],
   units: T[],
@@ -97,6 +137,10 @@ export async function printSnapshot<T>(
 ) {
   // TODO: add interactivity
   printSnapshotProgram(transformF, units, schemaName, dirPath)();
+}
+
+export async function deleteSnapshot(schemaName: string, dirPath: string) {
+  return deleteSnapshotProgram(schemaName, dirPath)();
 }
 
 export type ExtractTypeFromSnapshots<T extends SnapshotPrinted> = T['type'];

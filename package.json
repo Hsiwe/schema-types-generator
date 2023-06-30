@@ -12,6 +12,7 @@
     "start:dev": "npx nodemon",
     "generate-sample": "ts-node ./src/simple-schema/generate-sample.ts",
     "generate-sample-snapshot": "ts-node ./src/simple-schema/generate-sample-snapshot.ts",
+    "delete-sample-snapshot": "ts-node ./src/simple-schema/delete-sample-snapshot.ts",
     "prepare": "npm run build"
   },
   "author": "hsiwe",
