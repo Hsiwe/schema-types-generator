@@ -5,6 +5,16 @@ import { isString } from 'fp-ts/lib/string';
 import { isNumber } from 'fp-ts/lib/number';
 import ts from 'typescript';
 
+const extendableLiteralType = ts.factory.createTemplateLiteralType(
+  ts.factory.createTemplateHead('extendable', 'extendable'),
+  [
+    ts.factory.createTemplateLiteralTypeSpan(
+      ts.factory.createKeywordTypeNode(ts.SyntaxKind.NumberKeyword),
+      ts.factory.createTemplateTail('', '')
+    ),
+  ]
+);
+
 const unitToType = (unit: Unit): Exclude<UnitReflectionReturnValue, 'custom'> => {
   if ('value' in unit) {
     if (isBoolean(unit.value)) return 'boolean';
@@ -18,6 +28,22 @@ const unitToType = (unit: Unit): Exclude<UnitReflectionReturnValue, 'custom'> =>
 
 const singleUnitToSchema = (unit: Unit): UnitReflectionT => {
   const returnValue = unitToType(unit);
+
+  if ('isExtendable' in unit) {
+    return {
+      key: unit.key,
+      required: unit.required,
+      returnValue: 'recursive',
+      values: [
+        {
+          key: extendableLiteralType,
+          values: unit.values.map(singleUnitToSchema),
+          returnValue: 'recursive',
+          required: true,
+        },
+      ],
+    } satisfies UnitReflectionT;
+  }
 
   if ('values' in unit && returnValue === 'recursive')
     return {

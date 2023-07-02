@@ -27,7 +27,26 @@ const selectNode = ts.factory.createTypeLiteralNode([
   ),
 ]);
 
-const transformHelper = (unit: UnitReflectionT): ts.PropertySignature => {
+const decideKeyStrategy = (
+  unit: UnitReflectionT
+): ((returnType: ts.TypeNode) => ts.TypeElement) => {
+  const questionToken = !unit.required
+    ? ts.factory.createToken(ts.SyntaxKind.QuestionToken)
+    : undefined;
+
+  const { key } = unit;
+  if (typeof key === 'string')
+    return (returnType) =>
+      ts.factory.createPropertySignature(undefined, key, questionToken, returnType);
+  return (returnType) =>
+    ts.factory.createIndexSignature(
+      undefined,
+      [ts.factory.createParameterDeclaration(undefined, undefined, 'key', undefined, key)],
+      returnType
+    );
+};
+
+const transformHelper = (unit: UnitReflectionT): ts.TypeElement => {
   const typeMap: Record<Exclude<UnitReflectionReturnValue, 'recursive' | 'custom'>, ts.TypeNode> = {
     boolean: ts.factory.createTypeReferenceNode('boolean'),
     string: ts.factory.createTypeReferenceNode('string'),
@@ -37,27 +56,16 @@ const transformHelper = (unit: UnitReflectionT): ts.PropertySignature => {
     select: selectNode,
   };
 
-  const questionToken = !unit.required
-    ? ts.factory.createToken(ts.SyntaxKind.QuestionToken)
-    : undefined;
+  const strategy = decideKeyStrategy(unit);
+
+  let type: ts.TypeNode | undefined;
 
   if (unit.returnValue === 'recursive')
-    return ts.factory.createPropertySignature(
-      undefined,
-      unit.key,
-      questionToken,
-      ts.factory.createTypeLiteralNode(unit.values.map(transformHelper))
-    );
+    type = ts.factory.createTypeLiteralNode(unit.values.map(transformHelper));
+  else if (unit.returnValue === 'custom') type = unit.type;
+  else type = typeMap[unit.returnValue];
 
-  if (unit.returnValue === 'custom')
-    return ts.factory.createPropertySignature(undefined, unit.key, questionToken, unit.type);
-
-  return ts.factory.createPropertySignature(
-    undefined,
-    unit.key,
-    questionToken,
-    typeMap[unit.returnValue]
-  );
+  return strategy(type);
 };
 
 export type SchemaTypeTree = string & {

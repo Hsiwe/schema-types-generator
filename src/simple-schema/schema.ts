@@ -1,6 +1,6 @@
 type UnitValue = string | number | boolean | Date | { key: string; value: string };
 
-export type Unit = ValueUnit<UnitValue> | ContainerUnit | CustomTypeUnit;
+export type Unit = ValueUnit<UnitValue> | ContainerUnit | CustomTypeUnit | ExtendableContainerUnit;
 
 interface ValueUnit<T extends UnitValue> {
   readonly required: boolean;
@@ -11,6 +11,13 @@ interface ValueUnit<T extends UnitValue> {
 interface ContainerUnit {
   readonly required: boolean;
   readonly key: string;
+  readonly values: Unit[];
+}
+
+interface ExtendableContainerUnit {
+  readonly required: boolean;
+  readonly key: string;
+  readonly isExtendable: true;
   readonly values: Unit[];
 }
 
@@ -49,6 +56,12 @@ class SimpleContainerUnit implements ContainerUnit {
   constructor(readonly required: boolean, readonly key: string, readonly values: Unit[]) {}
 }
 
+class SimpleExtendableContainerUnit implements ExtendableContainerUnit {
+  isExtendable: true = true;
+
+  constructor(readonly required: boolean, readonly key: string, readonly values: Unit[]) {}
+}
+
 export const simpleSchema = [
   new SimpleContainerUnit(true, 'root', [
     new SimpleContainerUnit(true, 'first_containter', [
@@ -60,6 +73,9 @@ export const simpleSchema = [
     new SimpleNumberUnit(true, 'number_unit_1', 1),
     new SimpleBooleanUnit(true, 'boolean_unit_1', false),
     new SimpleSelectUnit(true, 'select_unit_1', { key: 'key', value: 'value' }),
+    new SimpleExtendableContainerUnit(true, 'extendable_unit_1', [
+      new SimpleTextUnit(true, 'text_unit_1_1', 'text_unit_1_1_value'),
+    ]),
   ]),
   new SimpleNumberUnit(true, 'number_unit_2', 2),
   new SimpleDateUnit(true, 'date_unit_1', new Date()),
