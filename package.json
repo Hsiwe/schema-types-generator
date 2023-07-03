@@ -10,9 +10,7 @@
     "build": "rimraf ./dist && tsc",
     "start": "npm run build && node dist/index.js",
     "start:dev": "npx nodemon",
-    "generate-sample": "ts-node ./src/simple-schema/generate-sample.ts",
-    "generate-sample-snapshot": "ts-node ./src/simple-schema/generate-sample-snapshot.ts",
-    "delete-sample-snapshot": "ts-node ./src/simple-schema/delete-sample-snapshot.ts",
+    "generate-sample": "ts-node ./src/simple-schema/generation-config.ts",
     "prepare": "npm run build"
   },
   "author": "hsiwe",

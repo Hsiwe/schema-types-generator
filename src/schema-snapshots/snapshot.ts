@@ -132,6 +132,7 @@ export function insertSnapshot(snapshots: readonly Snapshot[], snapshot: Snapsho
 export function deleteSnapshotByHash(
   snapshots: readonly Snapshot[],
   hash: string
+  // TODO: use fp-ts arrays
 ): E.Either<string, Snapshot[]> {
   const index = snapshots.findIndex((x) => x.hash === hash);
   if (index === -1) return E.left(`Snapshot with hash ${hash} was not found`);
