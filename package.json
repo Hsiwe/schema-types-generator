@@ -1,5 +1,5 @@
 {
-  "name": "@hsiwe/schema-types-generator",
+  "name": "schema-types-generator",
   "homepage": "http://",
   "version": "1.0.0",
   "description": "Generates types based on an abstract unit tree",
