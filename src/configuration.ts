@@ -20,13 +20,19 @@ import {
 
 interface ConfigurationSchema<T> {
   name: string;
+  snapshotAlias?: string;
+  singleTypeAlias?: string;
   units: T[];
+  inspect?: {
+    loadData: () => Promise<T[][]>;
+    cleanup: () => Promise<void>;
+  };
 }
 
 export type Configuration<T> = {
   schemas: ConfigurationSchema<T>[];
   snapshotsDir: string;
-  tempDir: string;
+  singleDir: string;
   unitsToReflection: (units: T[]) => UnitReflectionT[];
 };
 
@@ -67,6 +73,33 @@ const deleteSnapshotProgram = (schemaName: string, dirPath: string): T.Task<void
       )(newSnapshots)
     ),
     T.flatMap(() => putStrLn('Deleted snapshot')),
+    T.flatMap(() => T.of(undefined))
+  );
+
+const inspectProgram = (
+  getReflection: () => T.Task<UnitReflectionT[][]>,
+  schemaName: string,
+  dirPath: string,
+  snapshotAlias?: string
+): T.Task<void> =>
+  pipe(
+    T.Do,
+    T.apS('reflections', getReflection()),
+    T.bind('pathToFile', () => T.of(`${dirPath}/${schemaName}_snapshot.ts`)),
+    T.bind('type', ({ reflections }) =>
+      T.of(
+        printType(
+          snapshotsToUnionType(
+            snapshotAlias || schemaName,
+            reflections.map((reflection) =>
+              createSnapshot('Inspected', createTypeLiteralNode(reflection))
+            )
+          )
+        )
+      )
+    ),
+    T.tap(({ type, pathToFile }) => T.of(writeFileSync(pathToFile, type))),
+    T.flatMap(() => putStrLn('Created snapshots from inspected types')),
     T.flatMap(() => T.of(undefined))
   );
 
@@ -117,7 +150,7 @@ const printSnapshotProgram = <T>(
     T.flatMap(() => T.of(undefined))
   );
 
-const printTempTypeProgram = <T>(
+const printSingleTypeProgram = <T>(
   transformF: (units: T[]) => UnitReflectionT[],
   units: T[],
   treeName: string,
@@ -133,7 +166,7 @@ const printTempTypeProgram = <T>(
         )
       )
     ),
-    T.flatMap(() => putStrLn('Created temporary type')),
+    T.flatMap(() => putStrLn('Created single type')),
     T.flatMap(() => T.of(undefined))
   );
 
@@ -185,24 +218,29 @@ const actionMap = {
   // restart the loop if they want to create a new snapshot.
   '1': { key: 'create_snapshot', desc: 'Create snapshot' },
   '2': { key: 'delete_snapshot', desc: 'Delete snapshot' },
-  '3': { key: 'create_temp', desc: 'Create temporary type' },
+  '3': { key: 'create_single', desc: 'Create single type' },
+  '4': { key: 'inspect', desc: 'Create multiple snapshots from data' },
 } as const;
 type ConfigAction = (typeof actionMap)[keyof typeof actionMap]['key'];
-function selectAction(): T.Task<ConfigAction> {
+function getActionsForSchema(schema: ConfigurationSchema<unknown>): Partial<typeof actionMap> {
+  if (schema.inspect) return actionMap;
+  return { '1': actionMap['1'], '2': actionMap['2'], '3': actionMap['3'] };
+}
+function selectAction(schema: ConfigurationSchema<unknown>): T.Task<ConfigAction> {
   return pipe(
     T.Do,
     T.flatMap(() =>
       putStrLn(
         // eslint-disable-next-line prettier/prettier
         `Available actions: \n${
-        Object.entries(actionMap)
+        Object.entries(getActionsForSchema(schema))
           .map(([key, val]) => `${key}: ${val.desc}`)
           .join('\n')}`
       )
     ),
     T.flatMap(() => ask('Insert action number: ')),
     T.flatMap((answer) => {
-      if (!Object.keys(actionMap).includes(answer)) return selectAction();
+      if (!Object.keys(actionMap).includes(answer)) return selectAction(schema);
       return T.of(actionMap[answer as keyof typeof actionMap]['key']);
     })
   );
@@ -216,23 +254,40 @@ function actOnAction<T>(
   return pipe(
     T.Do,
     T.flatMap(() => {
+      const inspect = schema.inspect;
       switch (action) {
-        case 'create_temp':
-          return printTempTypeProgram(
+        case 'create_single':
+          return printSingleTypeProgram(
             config.unitsToReflection,
             schema.units,
-            schema.name,
-            config.tempDir
+            schema.singleTypeAlias || schema.name,
+            config.singleDir
           );
         case 'create_snapshot':
           return printSnapshotProgram(
             config.unitsToReflection,
             schema.units,
-            schema.name,
+            schema.snapshotAlias || schema.name,
             config.snapshotsDir
           );
         case 'delete_snapshot':
           return deleteSnapshotProgram(schema.name, config.snapshotsDir);
+        case 'inspect':
+          if (inspect) {
+            return inspectProgram(
+              () =>
+                pipe(
+                  T.Do,
+                  T.apS('units', async () => inspect.loadData()),
+                  T.tap(() => T.of(inspect.cleanup())),
+                  T.flatMap(({ units }) => T.of(units.map(config.unitsToReflection)))
+                ),
+              schema.name,
+              config.snapshotsDir,
+              schema.snapshotAlias
+            );
+          }
+          return T.of(undefined);
       }
     })
   );
@@ -241,7 +296,7 @@ const generatingLoop = <T>(config: Configuration<T>): T.Task<void> =>
   pipe(
     T.Do,
     T.bind('schema', () => selectSchema(config.schemas)),
-    T.bind('action', () => selectAction()),
+    T.bind('action', ({ schema }) => selectAction(schema)),
     T.flatMap(({ action, schema }) => actOnAction(config, schema, action)),
     T.flatMap(() => shouldContinue()),
     T.flatMap((answer) => (answer ? generatingLoop(config) : T.of(undefined)))
@@ -252,7 +307,7 @@ export const initConfigurationProgram = <T>(config: Configuration<T>): T.Task<vo
     T.Do,
     T.tap(() => putStrLn('Loading configuration')),
     T.flatMap(() => dirInitProgram(config.snapshotsDir)),
-    T.flatMap(() => dirInitProgram(config.tempDir)),
+    T.flatMap(() => dirInitProgram(config.singleDir)),
     T.tap(() => putStrLn('Initiated directories')),
     T.flatMap(() => generatingLoop(config))
   );

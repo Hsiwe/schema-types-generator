@@ -6,7 +6,7 @@ import { unitsToSchema } from './schema-to-reflection';
 const config: Configuration<Unit> = {
   schemas: [{ name: 'ExampleSchema', units: simpleSchema }],
   snapshotsDir: './generated',
-  tempDir: './generated',
+  singleDir: './generated',
   unitsToReflection: unitsToSchema,
 };
 
