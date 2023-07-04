@@ -4,6 +4,7 @@
   "version": "1.0.0",
   "description": "Generates types based on an abstract unit tree",
   "main": "./src/index.ts",
+  "types": "./src/index.d.ts",
   "scripts": {
     "test": "jest",
     "docs": "docs-ts",
@@ -13,7 +14,7 @@
     "generate-sample": "ts-node ./src/simple-schema/generation-config.ts",
     "prepare": "npm run build"
   },
-  "author": "hsiwe",
+  "author": "hsiwe <esorokinof@gmail.com>",
   "files": [
     "dist/**/*"
   ],
