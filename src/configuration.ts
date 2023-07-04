@@ -94,8 +94,7 @@ const deleteSnapshotProgram = (schemaName: string, dirPath: string): T.Task<void
 const inspectProgram = (
   getReflection: () => T.Task<UnitReflectionT[][]>,
   schemaName: string,
-  dirPath: string,
-  snapshotAlias?: string
+  dirPath: string
 ): T.Task<void> =>
   pipe(
     T.Do,
@@ -105,7 +104,7 @@ const inspectProgram = (
       T.of(
         printType(
           snapshotsToUnionType(
-            snapshotAlias || schemaName,
+            schemaName,
             reflections.map((reflection) =>
               createSnapshot('Inspected', createTypeLiteralNode(reflection))
             )
@@ -297,9 +296,8 @@ function actOnAction<T>(
                   T.tap(() => T.of(inspect.cleanup())),
                   T.flatMap(({ units }) => T.of(units.map(config.unitsToReflection)))
                 ),
-              schema.name,
-              config.snapshotsDir,
-              schema.snapshotAlias
+              schema.snapshotAlias || schema.name,
+              config.snapshotsDir
             );
           }
           return T.of(undefined);
