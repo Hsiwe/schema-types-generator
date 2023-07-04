@@ -19,20 +19,35 @@ import {
 } from './schema-snapshots/snapshot';
 
 interface ConfigurationSchema<T> {
+  /**
+   * This name will be used for identifying schemas, should be unique. Also used as a default type
+   * alias.
+   */
   name: string;
+  /** If provided will be used as an alias of created snapshots */
   snapshotAlias?: string;
+  /** If provided will be used as an alias of created single types */
   singleTypeAlias?: string;
+  /** Pre-built external schema */
   units: T[];
+  /**
+   * For special cases where you want to retroactively create snapshots from some already existing
+   * data(e.g. database)
+   */
   inspect?: {
     loadData: () => Promise<T[][]>;
+    /** Should close all open connections, file handles etc. */
     cleanup: () => Promise<void>;
   };
 }
 
 export type Configuration<T> = {
   schemas: ConfigurationSchema<T>[];
+  /** Path(relative to the calling code) where to store generated snapshots. */
   snapshotsDir: string;
+  /** Path(relative to the calling code) where to store generated single types. */
   singleDir: string;
+  /** Transforms your schema units to an intermediate language */
   unitsToReflection: (units: T[]) => UnitReflectionT[];
 };
 
