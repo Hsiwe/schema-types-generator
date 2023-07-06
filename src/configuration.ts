@@ -285,7 +285,7 @@ function actOnAction<T>(
             config.snapshotsDir
           );
         case 'delete_snapshot':
-          return deleteSnapshotProgram(schema.name, config.snapshotsDir);
+          return deleteSnapshotProgram(schema.snapshotAlias || schema.name, config.snapshotsDir);
         case 'inspect':
           if (inspect) {
             return inspectProgram(
