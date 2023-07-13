@@ -174,10 +174,7 @@ const printSingleTypeProgram = <T>(
     T.Do,
     T.flatMap(() =>
       T.of(
-        writeFileSync(
-          `${dirPath}/${treeName}.ts`,
-          createTypeTree(transformF(units), `${treeName}Temp`)
-        )
+        writeFileSync(`${dirPath}/${treeName}.ts`, createTypeTree(transformF(units), `${treeName}`))
       )
     ),
     T.flatMap(() => putStrLn('Created single type')),
