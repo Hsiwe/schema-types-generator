@@ -1,7 +1,7 @@
 {
   "name": "@hsiwe/schema-types-generator",
   "homepage": "https://github.com/Hsiwe/schema-types-generator",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "Generates types based on an abstract unit tree",
   "main": "./dist/src/index.js",
   "types": "./dist/src/index.d.ts",
