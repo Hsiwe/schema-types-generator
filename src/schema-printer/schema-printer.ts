@@ -53,6 +53,9 @@ const transformHelper = (unit: UnitReflectionT): ts.TypeElement => {
     number: ts.factory.createTypeReferenceNode('number'),
     date: ts.factory.createTypeReferenceNode('Date'),
     unknown: ts.factory.createTypeReferenceNode('unknown'),
+    null: ts.factory.createLiteralTypeNode(ts.factory.createNull()),
+    undefined: ts.factory.createKeywordTypeNode(ts.SyntaxKind.UndefinedKeyword),
+    object: ts.factory.createKeywordTypeNode(ts.SyntaxKind.ObjectKeyword),
     select: selectNode,
   };
 
@@ -63,7 +66,10 @@ const transformHelper = (unit: UnitReflectionT): ts.TypeElement => {
   if (unit.returnValue === 'recursive')
     type = ts.factory.createTypeLiteralNode(unit.values.map(transformHelper));
   else if (unit.returnValue === 'custom') type = unit.type;
-  else type = typeMap[unit.returnValue];
+  else
+    type = Array.isArray(unit.returnValue)
+      ? ts.factory.createUnionTypeNode(unit.returnValue.map((val) => typeMap[val]))
+      : typeMap[unit.returnValue];
 
   return strategy(type);
 };

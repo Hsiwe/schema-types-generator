@@ -12,4 +12,8 @@ export async function initConfiguration<T>(configuration: Configuration<T>): Pro
 
 export { Configuration } from './configuration';
 export type ExtractTypeFromSnapshots<T extends SnapshotPrinted> = T['type'];
-export { UnitReflectionT, UnitReflectionReturnValue } from './schema-printer/schema-types';
+export {
+  UnitReflectionT,
+  UnitReflectionReturnValue,
+  UnitReflectionPrimitiveReturnValue,
+} from './schema-printer/schema-types';

@@ -7,16 +7,24 @@ export type UnitReflectionReturnValue =
   | 'number'
   | 'boolean'
   | 'date'
+  | 'null'
+  | 'undefined'
+  | 'object'
   | 'recursive'
   | 'select'
   | 'custom'
   | 'unknown';
 
+export type UnitReflectionPrimitiveReturnValue = Exclude<
+  UnitReflectionReturnValue,
+  'recursive' | 'custom'
+>;
+
 export type UnitReflectionT =
   | {
       required: boolean;
       key: UnitReflectionKey;
-      returnValue: Exclude<UnitReflectionReturnValue, 'recursive' | 'custom'>;
+      returnValue: UnitReflectionPrimitiveReturnValue | UnitReflectionPrimitiveReturnValue[];
     }
   | {
       required: boolean;
