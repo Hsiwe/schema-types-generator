@@ -184,13 +184,7 @@ const printSingleTypeProgram = <T>(
 const dirInitProgram = (path: string): T.Task<void> =>
   pipe(
     T.Do,
-    T.tap(() => putStrLn(`Initiating dir at ${path}`)),
-    T.flatMap(() =>
-      T.of(async () => {
-        if (!existsSync(path)) return mkdirSync(path);
-      })
-    ),
-    T.flatMap(() => putStrLn(`Initiated dir at ${path}`)),
+    T.tap(() => (!existsSync(path) ? T.of(mkdirSync(path)) : T.of(undefined))),
     T.flatMap(() => T.of(undefined))
   );
 
@@ -213,7 +207,7 @@ function shouldContinue(): T.Task<boolean> {
 function selectSchema<T>(schemas: ConfigurationSchema<T>[]): T.Task<ConfigurationSchema<T>> {
   return pipe(
     T.Do,
-    T.flatMap(() => putStrLn(`Available schemas: \n${schemas.map((x) => x.name).join('\n')}`)),
+    T.flatMap(() => putStrLn(`Available schemas: \n ${schemas.map((x) => x.name).join('\n ')}\n`)),
     T.flatMap(() => ask('Insert a schema name: ')),
     T.flatMap((answer) => {
       const schema = schemas.find((x) => x.name === answer);
@@ -243,10 +237,10 @@ function selectAction(schema: ConfigurationSchema<unknown>): T.Task<ConfigAction
     T.flatMap(() =>
       putStrLn(
         // eslint-disable-next-line prettier/prettier
-        `Available actions: \n${
+        `\nAvailable actions: \n${
         Object.entries(getActionsForSchema(schema))
-          .map(([key, val]) => `${key}: ${val.desc}`)
-          .join('\n')}`
+          .map(([key, val]) => ` ${key}: ${val.desc}`)
+          .join('\n')}\n`
       )
     ),
     T.flatMap(() => ask('Insert action number: ')),
@@ -318,6 +312,6 @@ export const initConfigurationProgram = <T>(config: Configuration<T>): T.Task<vo
     T.tap(() => putStrLn('Loading configuration')),
     T.flatMap(() => dirInitProgram(config.snapshotsDir)),
     T.flatMap(() => dirInitProgram(config.singleDir)),
-    T.tap(() => putStrLn('Initiated directories')),
+    T.tap(() => putStrLn('Initiated directories\n')),
     T.flatMap(() => generatingLoop(config))
   );
