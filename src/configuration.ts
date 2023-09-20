@@ -155,10 +155,12 @@ const printSnapshotProgram = <T>(
       )
     ),
     T.tap(({ typeStr, pathToFile }) => T.of(writeFileSync(pathToFile, typeStr))),
-    T.flatMap(({ snapshot }) =>
-      // TODO: This message is not correct sometimes. When hash doesn't change we don't modify the title
+    T.flatMap(({ snapshot, typeStr, source }) =>
       putStrLn(
-        `Created a snapshot for schema "${schemaName}" with hash: ${snapshot.hash}, title: "${snapshot.title}" at "${dirPath}"`
+        // TODO: Find a better way to decide whether we inserted snapshot or not
+        source !== typeStr
+          ? `Created a snapshot for schema "${schemaName}" with hash: ${snapshot.hash}, title: "${snapshot.title}" at "${dirPath}"`
+          : `Didn't create a snapshot because snapshot with hash ${snapshot.hash} already exists`
       )
     ),
     T.flatMap(() => T.of(undefined))
