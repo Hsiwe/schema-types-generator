@@ -226,12 +226,13 @@ const actionMap = {
   '1': { key: 'create_snapshot', desc: 'Create snapshot' },
   '2': { key: 'delete_snapshot', desc: 'Delete snapshot' },
   '3': { key: 'create_single', desc: 'Create single type' },
-  '4': { key: 'inspect', desc: 'Create multiple snapshots from data' },
+  '4': { key: 'create_single_and_snapshot', desc: 'Init schema(create single type and snapshot)' },
+  '5': { key: 'inspect', desc: 'Create multiple snapshots from data' },
 } as const;
 type ConfigAction = (typeof actionMap)[keyof typeof actionMap]['key'];
 function getActionsForSchema(schema: ConfigurationSchema<unknown>): Partial<typeof actionMap> {
   if (schema.inspect) return actionMap;
-  return { '1': actionMap['1'], '2': actionMap['2'], '3': actionMap['3'] };
+  return { '1': actionMap['1'], '2': actionMap['2'], '3': actionMap['3'], '4': actionMap['4'] };
 }
 function selectAction(schema: ConfigurationSchema<unknown>): T.Task<ConfigAction> {
   return pipe(
@@ -276,6 +277,26 @@ function actOnAction<T>(
             schema.units,
             schema.snapshotAlias || schema.name,
             config.snapshotsDir
+          );
+        case 'create_single_and_snapshot':
+          return pipe(
+            T.of(undefined),
+            T.tap(() =>
+              printSingleTypeProgram(
+                config.unitsToReflection,
+                schema.units,
+                schema.singleTypeAlias || schema.name,
+                config.singleDir
+              )
+            ),
+            T.tap(() =>
+              printSnapshotProgram(
+                config.unitsToReflection,
+                schema.units,
+                schema.snapshotAlias || schema.name,
+                config.snapshotsDir
+              )
+            )
           );
         case 'delete_snapshot':
           return deleteSnapshotProgram(schema.snapshotAlias || schema.name, config.snapshotsDir);
