@@ -17,6 +17,7 @@ import {
   parseSourceFileToSnapshots,
   snapshotsToUnionType,
 } from './schema-snapshots/snapshot';
+import { getUniqueBy } from './lib/get-uniq-by';
 
 interface ConfigurationSchema<T> {
   /**
@@ -105,8 +106,12 @@ const inspectProgram = (
         printType(
           snapshotsToUnionType(
             schemaName,
-            reflections.map((reflection) =>
-              createSnapshot('Inspected', createTypeLiteralNode(reflection))
+
+            getUniqueBy(
+              reflections.map((reflection) =>
+                createSnapshot('Inspected', createTypeLiteralNode(reflection))
+              ),
+              'hash'
             )
           )
         )
